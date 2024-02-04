@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  openmeetigs:
+    # В образе min-7.2.0 отсутствует Kurento Media Server, его нужно запускать отдельно
+    image: apache/openmeetings:7.2.0
+    ports:
+      - "5443:5443"
