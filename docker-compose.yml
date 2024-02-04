@@ -19,6 +19,7 @@ services:
 
   mariadb:
     image: mariadb
+    restart: unless-stopped
     volumes:
         - VOLUME:/var/lib/mysql
     # задаем пароль для root пользователя
