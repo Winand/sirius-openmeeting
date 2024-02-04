@@ -4,5 +4,23 @@ services:
   openmeetigs:
     # В образе min-7.2.0 отсутствует Kurento Media Server, его нужно запускать отдельно
     image: apache/openmeetings:7.2.0
-    ports:
-      - "5443:5443"
+    restart: unless-stopped
+    # ports:
+    #   - "5443:5443"
+    networks:
+      sirius_macvlan:
+        ipv4_address: "192.168.88.150"
+
+networks:
+  # docker network create -d macvlan --subnet 192.168.88.0/24 --gateway 192.168.88.1 -o parent=eth0 mcvln
+  sirius_macvlan:
+    name: mcvln
+    # external: true
+    driver: macvlan
+    driver_opts:
+      parent: eth0
+    ipam:
+      config:
+        - subnet: "192.168.88.0/24"
+          # ip_range: "192.168.88.150/32"
+          gateway: "192.168.88.1"

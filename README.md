@@ -6,6 +6,13 @@
 [Ошибка "The signed image’s hash is not allowed"](https://ekiwi-blog.de/en/23430/hyper-v-uefi-error-message-the-signed-images-hash-is-not-allowed),
 [[2]](https://ao-system.net/en/note/187). Отключить Безопасную загрузку в настройках ВМ.
 
+Произвести настройку ВМ для работы в дальнейшем с сетью типа *macvlan*:
+- Создать "внешний" коммутатор в Диспетчере виртуальных коммутаторов Hyper-V и
+подключить его в параметрах ВМ. Виртуальная машина будет получать IP по DHCP.
+- В параметрах ВМ [включить](https://serverfault.com/questions/812528/docker-container-connection-in-macvlan-network)
+*Сетевой адаптер / Дополнительные параметры / [v] Включить спуфинг MAC-адресов*
+
+
 ## Расширенная сессия Hyper-V
 - [Guide and scripts for RedHat Enterprise Linux 8 VM on Hyper-V with Enhanced Session Mode](https://github.com/EtienneBarbier/Hyper-V-RHEL-8-VM)
 - [modules-load.d](https://www.freedesktop.org/software/systemd/man/latest/modules-load.d.html)
@@ -45,6 +52,7 @@ Set-VM "Alma Linux 9" -EnhancedSessionTransportType HVSocket
 Get-VM "Alma Linux 9" | Select-Object EnhancedSessionTransportType  # проверка
 ```
 
+
 ## Установка Docker
 - [How To Setup Joomla, MySQL, and phpMyAdmin on a Docker Container](https://blog.racknerd.com/how-to-setup-joomla-mysql-and-phpmyadmin-on-a-docker-container)
 
@@ -62,6 +70,7 @@ sudo usermod -aG docker $(whoami)
 ```
 Перезагрузить ВМ.
 
+
 ## Запуск Apache OpenMeetings
 Установить *git*: `sudo yum install git`
 
@@ -71,8 +80,32 @@ sudo usermod -aG docker $(whoami)
 
 Клонировать данный репозиторий: `git clone git@github.com:Winand/sirius-openmeetings.git`
 
+В файле *docker-compose.yml* изменить параметры в соответствии с конфигурацией сети:
+- `subnet:` - локальная сеть с маской
+- `gateway:` - адрес шлюза (роутера)
+- `ipv4_addr:` - адрес контейнера в сети (не должен быть занят!)
+
 Запустить OpenMeetings:
 ```bash
 cd sirius-openmeetings
 docker compose up -d
 ```
+
+Перейти по адресу `https://<ipv4_addr>:5443/openmeetings` с любого компьютера
+в локальной сети (из самой ВМ зайти не удаётся!).
+Указать логин *om_admin* и пароль *1Q2w3e4r5t^y*.
+
+Перейти в Administration / Users и создать нового пользователя:
+- Login: *test*
+- Password: *Password1!*
+- Email address: *test@example.com*
+- Usergroup: *group*
+
+На главной странице нажать *Start Conference* и зайти в одну комнату с двух
+устройств для проверки функциональности. ![](openmeetings-room.jpg)
+
+## Дополнительные ссылки
+- [Networking using a macvlan network](https://docs.docker.com/network/network-tutorial-macvlan)
+- [Пример docker-compose.yml для сети macvlan](https://github.com/sarunas-zilinskas/docker-compose-macvlan/blob/master/docker-compose.yml)
+- [Docker Macvlan Demystify](https://msazure.club/docker-macvlan-demystify)
+- [MACVLAN network for Plex (Reddit)](https://www.reddit.com/r/docker/comments/8xn3yx/macvlan_network_for_plex)
