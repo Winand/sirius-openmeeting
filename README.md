@@ -104,6 +104,16 @@ docker compose up -d
 На главной странице нажать *Start Conference* и зайти в одну комнату с двух
 устройств для проверки функциональности. ![](openmeetings-room.jpg)
 
+## База данных
+В задании требуется перенести БД на том *VOLUME* и подключить его как локальную папку.
+
+Если подключить директорию с данными встроенной СУБД MySQL */var/lib/mysql* к хосту,
+то БД не работает, в логе */var/log/mysql/error.log* возникает ошибка
+"Failed to find valid data directory", т. к. папка пустая и БД не инициализируется.
+См. также [docker-compose doesn't start mysql:8 correctly](https://stackoverflow.com/questions/58021378/docker-compose-doesnt-start-mysql8-correctly).
+
+Для решения этой проблемы поднят отдельный контейнер MariaDB.
+
 ## Дополнительные ссылки
 - [Networking using a macvlan network](https://docs.docker.com/network/network-tutorial-macvlan)
 - [Пример docker-compose.yml для сети macvlan](https://github.com/sarunas-zilinskas/docker-compose-macvlan/blob/master/docker-compose.yml)

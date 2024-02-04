@@ -5,11 +5,34 @@ services:
     # В образе min-7.2.0 отсутствует Kurento Media Server, его нужно запускать отдельно
     image: apache/openmeetings:7.2.0
     restart: unless-stopped
+    environment:
+      - OM_DB_HOST=mariadb
+      - OM_DB_USER=root
+      - OM_DB_PASS=secretPwd
+    depends_on:
+      - mariadb
     # ports:
     #   - "5443:5443"
     networks:
       sirius_macvlan:
         ipv4_address: "192.168.88.150"
+
+  mariadb:
+    image: mariadb
+    volumes:
+        - VOLUME:/var/lib/mysql
+    # задаем пароль для root пользователя
+    environment:
+        MYSQL_ROOT_PASSWORD: secretPwd
+
+volumes:
+  VOLUME:
+    # https://stackoverflow.com/questions/35841241/docker-compose-named-mounted-volume
+    driver_opts:
+      type: none
+      # Требуется полный путь к существующей папке!
+      device: /home/amakarov/sirius-openmeetings/db_data
+      o: bind
 
 networks:
   # docker network create -d macvlan --subnet 192.168.88.0/24 --gateway 192.168.88.1 -o parent=eth0 mcvln
